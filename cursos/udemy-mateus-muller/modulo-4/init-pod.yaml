@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-init
+  labels:
+    app: test-init
+spec:
+  initContainers:
+  - name: waitfordns
+    image: busybox:latest
+    command: ['sh', '-c', 'until nslookup mymysql.default.svc.cluster.local; do echo "Trying to resolve dns..."; sleep 2; done']
+  containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+    - containerPort: 80

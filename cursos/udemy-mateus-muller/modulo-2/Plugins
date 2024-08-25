@@ -1,0 +1,3 @@
+# Uso do neat para remover conteúdo não desejado e criar um arquivo yaml baseado em objeto já existente.
+
+k get pods myapp -o yaml | k neat > pod2.yaml
