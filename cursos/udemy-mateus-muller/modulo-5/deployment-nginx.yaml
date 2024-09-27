@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-deployments
+  template:
+    metadata:
+      labels:
+        app: nginx-deployments
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources:
+          requests:
+            memory: "256M"
+            cpu: "100m"
+          limits:
+            memory: "512M"
+            cpu: "1000m"

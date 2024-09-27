@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lifecycle-demo-pod
+spec:
+  containers:
+  - name: lifecycle-demo-container
+    image: nginx
+    lifecycle:
+      postStart:
+        exec:
+          command: ["sh", "-c", "echo 'Hello from the postStart handler' >> /usr/share/message.txt"]
+      preStop:
+        exec:
+          command: ["sh", "-c", "echo 'Goodbye from the preStop handler' >> /usr/share/message.txt"]
+    ports:
+    - containerPort: 80
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m" 

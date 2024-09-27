@@ -1,38 +1,40 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mysql
+  name: flask-app
+  namespace: flask-example
 spec:
+  replicas: 3
   selector:
     matchLabels:
-      app: mysql
-  strategy:
-    type: Recreate
+      app: flask-app
   template:
     metadata:
       labels:
-        app: mysql
+        app: flask-app
     spec:
       containers:
-      - image: mysql:5.7
-        name: mysql
+      - name: flask-app
+        image: matheusrivello/flask-app:latest
+        ports:
+        - containerPort: 5000
         resources:
           requests:
-            memory: "64mi"
+            memory: "64Mi"
             cpu: "250m"
           limits:
-            memory: "265mi"
-            cpu: "500m"
+            memory: "265Mi"
+            cpu: "500m"        
         env:
-        - name: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_HOST
           valueFrom:
-            secretKeyRef:
-              name: flask-secret
-              key: MYSQL_ROOT_PASSWORD
+            configMapKeyRef:
+              name: flask-config
+              key: MYSQL_HOST
         - name: MYSQL_DATABASE
           valueFrom:
-            secretKeyRef:
-              name: flask-secret
+            configMapKeyRef:
+              name: flask-config
               key: MYSQL_DATABASE
         - name: MYSQL_USER
           valueFrom:
@@ -44,17 +46,18 @@ spec:
             secretKeyRef:
               name: flask-secret
               key: MYSQL_PASSWORD
-              
-        ports:
-        - containerPort: 3306
-          name: mysql
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql
+  name: flask-service
+  namespace: flask-example
 spec:
-  ports:
-  - port: 3306
   selector:
-    app: mysql
+    app: flask-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+    nodePort: 30008
+  type: NodePort
